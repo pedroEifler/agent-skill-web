@@ -13,6 +13,16 @@ import {
   getArchitectures,
   getDesignPatterns,
 } from "@/lib/mock-data"
+import {
+  JavaAdvancedOptionsPanel,
+  defaultJavaAdvancedOptions,
+  type JavaAdvancedOptions,
+} from "@/components/java-advanced-options"
+import {
+  SpringBootAdvancedOptionsPanel,
+  defaultSpringBootAdvancedOptions,
+  type SpringBootAdvancedOptions,
+} from "@/components/spring-boot-advanced-options"
 
 const TOTAL_STEPS = 4
 
@@ -46,6 +56,11 @@ export function ProjectWizard() {
   const [selectedFrameworkId, setSelectedFrameworkId] = useState<string | null>(null)
   const [selectedArchitectureId, setSelectedArchitectureId] = useState<string | null>(null)
   const [selectedPatternIds, setSelectedPatternIds] = useState<string[]>([])
+
+  // Opções avançadas Java
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false)
+  const [javaAdvancedOptions, setJavaAdvancedOptions] = useState<JavaAdvancedOptions>(defaultJavaAdvancedOptions)
+  const [springBootAdvancedOptions, setSpringBootAdvancedOptions] = useState<SpringBootAdvancedOptions>(defaultSpringBootAdvancedOptions)
 
   // Carregar linguagens na montagem
   useEffect(() => {
@@ -144,8 +159,7 @@ export function ProjectWizard() {
   }
 
   const handleAdvancedOptions = () => {
-    // Placeholder para opções avançadas
-    console.log("Opções avançadas clicado - funcionalidade futura")
+    setShowAdvancedOptions((prev) => !prev)
   }
 
   if (isComplete) {
@@ -227,11 +241,14 @@ export function ProjectWizard() {
         <Button
           variant="ghost"
           onClick={handleAdvancedOptions}
-          disabled={!canProceed()}
+          disabled={
+            !(currentStep === 0 && selectedLanguageId === "java") &&
+            !(currentStep === 1 && selectedFrameworkId === "spring-boot")
+          }
           className="gap-2"
         >
           <Settings className="h-4 w-4" />
-          Opções Avançadas
+          {showAdvancedOptions ? "Ocultar Avançadas" : "Opções Avançadas"}
         </Button>
 
         <Button
@@ -243,6 +260,20 @@ export function ProjectWizard() {
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
+
+      {showAdvancedOptions && currentStep === 0 && selectedLanguageId === "java" && (
+        <JavaAdvancedOptionsPanel
+          options={javaAdvancedOptions}
+          onChange={setJavaAdvancedOptions}
+        />
+      )}
+
+      {showAdvancedOptions && currentStep === 1 && selectedFrameworkId === "spring-boot" && (
+        <SpringBootAdvancedOptionsPanel
+          options={springBootAdvancedOptions}
+          onChange={setSpringBootAdvancedOptions}
+        />
+      )}
     </div>
   )
 }
