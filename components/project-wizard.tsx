@@ -23,6 +23,16 @@ import {
   defaultSpringBootAdvancedOptions,
   type SpringBootAdvancedOptions,
 } from "@/components/spring-boot-advanced-options"
+import {
+  CleanArchitectureAdvancedOptionsPanel,
+  defaultCleanArchitectureAdvancedOptions,
+  type CleanArchitectureAdvancedOptions,
+} from "@/components/clean-architecture-advanced-options"
+import {
+  MvcAdvancedOptionsPanel,
+  defaultMvcAdvancedOptions,
+  type MvcAdvancedOptions,
+} from "@/components/mvc-advanced-options"
 
 const TOTAL_STEPS = 4
 
@@ -61,6 +71,8 @@ export function ProjectWizard() {
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false)
   const [javaAdvancedOptions, setJavaAdvancedOptions] = useState<JavaAdvancedOptions>(defaultJavaAdvancedOptions)
   const [springBootAdvancedOptions, setSpringBootAdvancedOptions] = useState<SpringBootAdvancedOptions>(defaultSpringBootAdvancedOptions)
+  const [cleanArchAdvancedOptions, setCleanArchAdvancedOptions] = useState<CleanArchitectureAdvancedOptions>(defaultCleanArchitectureAdvancedOptions)
+  const [mvcAdvancedOptions, setMvcAdvancedOptions] = useState<MvcAdvancedOptions>(defaultMvcAdvancedOptions)
 
   // Carregar linguagens na montagem
   useEffect(() => {
@@ -243,7 +255,9 @@ export function ProjectWizard() {
           onClick={handleAdvancedOptions}
           disabled={
             !(currentStep === 0 && selectedLanguageId === "java") &&
-            !(currentStep === 1 && selectedFrameworkId === "spring-boot")
+            !(currentStep === 1 && selectedFrameworkId === "spring-boot") &&
+            !(currentStep === 2 && selectedArchitectureId === "clean-architecture") &&
+            !(currentStep === 2 && selectedArchitectureId === "mvc")
           }
           className="gap-2"
         >
@@ -272,6 +286,20 @@ export function ProjectWizard() {
         <SpringBootAdvancedOptionsPanel
           options={springBootAdvancedOptions}
           onChange={setSpringBootAdvancedOptions}
+        />
+      )}
+
+      {showAdvancedOptions && currentStep === 2 && selectedArchitectureId === "clean-architecture" && (
+        <CleanArchitectureAdvancedOptionsPanel
+          options={cleanArchAdvancedOptions}
+          onChange={setCleanArchAdvancedOptions}
+        />
+      )}
+
+      {showAdvancedOptions && currentStep === 2 && selectedArchitectureId === "mvc" && (
+        <MvcAdvancedOptionsPanel
+          options={mvcAdvancedOptions}
+          onChange={setMvcAdvancedOptions}
         />
       )}
     </div>

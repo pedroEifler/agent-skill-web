@@ -48,18 +48,6 @@ export interface SpringBootAdvancedOptions {
     oauth2: boolean
     corsAutomatico: boolean
   }
-  logs: {
-    logRequisicoes: boolean
-    correlationId: boolean
-    logsJson: boolean
-    logExceptions: boolean
-  }
-  configuracao: {
-    profilesObrigatorios: boolean
-    dockerSupport: boolean
-    kubernetesSupport: boolean
-    variaveisEnvironment: boolean
-  }
 }
 
 export const defaultSpringBootAdvancedOptions: SpringBootAdvancedOptions = {
@@ -86,19 +74,7 @@ export const defaultSpringBootAdvancedOptions: SpringBootAdvancedOptions = {
     springSecurity: false,
     oauth2: false,
     corsAutomatico: false,
-  },
-  logs: {
-    logRequisicoes: false,
-    correlationId: false,
-    logsJson: false,
-    logExceptions: false,
-  },
-  configuracao: {
-    profilesObrigatorios: false,
-    dockerSupport: false,
-    kubernetesSupport: false,
-    variaveisEnvironment: false,
-  },
+  }
 }
 
 interface SwitchRowProps {
@@ -153,12 +129,6 @@ export function SpringBootAdvancedOptionsPanel({
 
   const setSeg = (key: keyof SpringBootAdvancedOptions["seguranca"], value: boolean) =>
     onChange({ ...options, seguranca: { ...options.seguranca, [key]: value } })
-
-  const setLog = (key: keyof SpringBootAdvancedOptions["logs"], value: boolean) =>
-    onChange({ ...options, logs: { ...options.logs, [key]: value } })
-
-  const setCfg = (key: keyof SpringBootAdvancedOptions["configuracao"], value: boolean) =>
-    onChange({ ...options, configuracao: { ...options.configuracao, [key]: value } })
 
   return (
     <div className="mt-6 rounded-lg border bg-muted/20 p-4">
@@ -335,92 +305,6 @@ export function SpringBootAdvancedOptionsPanel({
               hint="Define quais domínios externos podem chamar a API, evitando que o navegador bloqueie requisições do front-end."
               checked={options.seguranca.corsAutomatico}
               onCheckedChange={(v) => setSeg("corsAutomatico", v)}
-            />
-          </AccordionContent>
-        </AccordionItem>
-
-        {/* Logs */}
-        <AccordionItem
-          value="logs"
-          className="rounded-md border bg-background px-4 last:border-b"
-        >
-          <AccordionTrigger className="py-3 text-sm font-medium hover:no-underline">
-            <div className="flex items-center gap-2">
-              <ScrollText className="h-4 w-4 text-muted-foreground" />
-              Logs
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="space-y-3 pb-4">
-            <SwitchRow
-              id="sb-log-req"
-              label="Log de requisições HTTP"
-              hint="Registra automaticamente cada chamada recebida: método, rota, status e tempo de resposta."
-              checked={options.logs.logRequisicoes}
-              onCheckedChange={(v) => setLog("logRequisicoes", v)}
-            />
-            <SwitchRow
-              id="sb-correlation"
-              label="Correlation ID"
-              hint="Gera um ID único por requisição que aparece em todos os logs relacionados, facilitando rastrear um problema do início ao fim."
-              checked={options.logs.correlationId}
-              onCheckedChange={(v) => setLog("correlationId", v)}
-            />
-            <SwitchRow
-              id="sb-logs-json"
-              label="Logs estruturados JSON"
-              hint="Os logs são gerados em formato JSON em vez de texto puro, facilitando a ingestão por ferramentas como Datadog ou ELK."
-              checked={options.logs.logsJson}
-              onCheckedChange={(v) => setLog("logsJson", v)}
-            />
-            <SwitchRow
-              id="sb-log-exc"
-              label="Log de exceptions obrigatório"
-              hint="Toda exceção deve ser registrada no log com stack trace completo, sem suprimir erros silenciosamente."
-              checked={options.logs.logExceptions}
-              onCheckedChange={(v) => setLog("logExceptions", v)}
-            />
-          </AccordionContent>
-        </AccordionItem>
-
-        {/* Configuração */}
-        <AccordionItem
-          value="configuracao"
-          className="rounded-md border bg-background px-4 last:border-b"
-        >
-          <AccordionTrigger className="py-3 text-sm font-medium hover:no-underline">
-            <div className="flex items-center gap-2">
-              <Settings2 className="h-4 w-4 text-muted-foreground" />
-              Configuração
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="space-y-3 pb-4">
-            <SwitchRow
-              id="sb-profiles"
-              label="Profiles obrigatórios"
-              hint="A aplicação deve ter arquivos de configuração separados por ambiente (dev, staging, prod) usando profiles do Spring."
-              checked={options.configuracao.profilesObrigatorios}
-              onCheckedChange={(v) => setCfg("profilesObrigatorios", v)}
-            />
-            <SwitchRow
-              id="sb-docker"
-              label="Docker support"
-              hint="Gera Dockerfile e docker-compose prontos para a aplicação rodar em container sem configuração manual."
-              checked={options.configuracao.dockerSupport}
-              onCheckedChange={(v) => setCfg("dockerSupport", v)}
-            />
-            <SwitchRow
-              id="sb-kubernetes"
-              label="Kubernetes support"
-              hint="Gera os arquivos de manifesto (deployment, service) para publicar a aplicação em um cluster Kubernetes."
-              checked={options.configuracao.kubernetesSupport}
-              onCheckedChange={(v) => setCfg("kubernetesSupport", v)}
-            />
-            <SwitchRow
-              id="sb-env-vars"
-              label="Variáveis via environment"
-              hint="Configurações sensíveis (senhas, URLs de banco) são lidas de variáveis de ambiente, não deixadas no código."
-              checked={options.configuracao.variaveisEnvironment}
-              onCheckedChange={(v) => setCfg("variaveisEnvironment", v)}
             />
           </AccordionContent>
         </AccordionItem>
