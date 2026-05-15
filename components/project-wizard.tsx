@@ -33,6 +33,16 @@ import {
   defaultHexagonalAdvancedOptions,
   type HexagonalAdvancedOptions,
 } from "@/components/hexagonal-advanced-options"
+import {
+  CleanArchitectureAdvancedOptionsPanel,
+  defaultCleanArchitectureAdvancedOptions,
+  type CleanArchitectureAdvancedOptions,
+} from "@/components/clean-architecture-advanced-options"
+import {
+  MvcAdvancedOptionsPanel,
+  defaultMvcAdvancedOptions,
+  type MvcAdvancedOptions,
+} from "@/components/mvc-advanced-options"
 
 const TOTAL_STEPS = 4
 
@@ -73,6 +83,8 @@ export function ProjectWizard() {
   const [springBootAdvancedOptions, setSpringBootAdvancedOptions] = useState<SpringBootAdvancedOptions>(defaultSpringBootAdvancedOptions)
   const [microservicesAdvancedOptions, setMicroservicesAdvancedOptions] = useState<MicroservicesAdvancedOptions>(defaultMicroservicesAdvancedOptions)
   const [hexagonalAdvancedOptions, setHexagonalAdvancedOptions] = useState<HexagonalAdvancedOptions>(defaultHexagonalAdvancedOptions)
+  const [cleanArchAdvancedOptions, setCleanArchAdvancedOptions] = useState<CleanArchitectureAdvancedOptions>(defaultCleanArchitectureAdvancedOptions)
+  const [mvcAdvancedOptions, setMvcAdvancedOptions] = useState<MvcAdvancedOptions>(defaultMvcAdvancedOptions)
 
   // Carregar linguagens na montagem
   useEffect(() => {
@@ -257,7 +269,9 @@ export function ProjectWizard() {
             !(currentStep === 0 && selectedLanguageId === "java") &&
             !(currentStep === 1 && selectedFrameworkId === "spring-boot") &&
             !(currentStep === 2 && selectedArchitectureId === "microservices") &&
-            !(currentStep === 2 && selectedArchitectureId === "hexagonal")
+            !(currentStep === 2 && selectedArchitectureId === "hexagonal") &&
+            !(currentStep === 2 && selectedArchitectureId === "clean-architecture") &&
+            !(currentStep === 2 && selectedArchitectureId === "mvc")
           }
           className="gap-2"
         >
@@ -300,6 +314,20 @@ export function ProjectWizard() {
         <HexagonalAdvancedOptionsPanel
           options={hexagonalAdvancedOptions}
           onChange={setHexagonalAdvancedOptions}
+        />
+      )}
+      
+      {showAdvancedOptions && currentStep === 2 && selectedArchitectureId === "clean-architecture" && (
+        <CleanArchitectureAdvancedOptionsPanel
+          options={cleanArchAdvancedOptions}
+          onChange={setCleanArchAdvancedOptions}
+        />
+      )}
+
+      {showAdvancedOptions && currentStep === 2 && selectedArchitectureId === "mvc" && (
+        <MvcAdvancedOptionsPanel
+          options={mvcAdvancedOptions}
+          onChange={setMvcAdvancedOptions}
         />
       )}
     </div>

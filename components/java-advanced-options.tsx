@@ -49,19 +49,6 @@ export interface JavaAdvancedOptions {
     ordenarAutomaticamente: boolean
     separarImportsEstaticos: boolean
   }
-  qualidade: {
-    responsabilidadeUnica: boolean
-    proibirDuplicacao: boolean
-    exigirTratamentoExcecoes: boolean
-    obrigarOptional: boolean
-    evitarNullReturns: boolean
-  }
-  orientacaoObjetos: {
-    preferirComposicao: boolean
-    classesFinalsPorPadrao: boolean
-    interfacesObrigatoriasServices: boolean
-    dtoObrigatorioApis: boolean
-  }
 }
 
 export const defaultJavaAdvancedOptions: JavaAdvancedOptions = {
@@ -88,20 +75,7 @@ export const defaultJavaAdvancedOptions: JavaAdvancedOptions = {
     proibirWildcard: false,
     ordenarAutomaticamente: false,
     separarImportsEstaticos: false,
-  },
-  qualidade: {
-    responsabilidadeUnica: false,
-    proibirDuplicacao: true,
-    exigirTratamentoExcecoes: false,
-    obrigarOptional: false,
-    evitarNullReturns: false,
-  },
-  orientacaoObjetos: {
-    preferirComposicao: false,
-    classesFinalsPorPadrao: false,
-    interfacesObrigatoriasServices: false,
-    dtoObrigatorioApis: false,
-  },
+  }
 }
 
 interface SwitchRowProps {
@@ -227,24 +201,6 @@ export function JavaAdvancedOptionsPanel({
     onChange({
       ...options,
       imports: { ...options.imports, [key]: value },
-    })
-
-  const setQualidade = (
-    key: keyof JavaAdvancedOptions["qualidade"],
-    value: boolean
-  ) =>
-    onChange({
-      ...options,
-      qualidade: { ...options.qualidade, [key]: value },
-    })
-
-  const setOO = (
-    key: keyof JavaAdvancedOptions["orientacaoObjetos"],
-    value: boolean
-  ) =>
-    onChange({
-      ...options,
-      orientacaoObjetos: { ...options.orientacaoObjetos, [key]: value },
     })
 
   return (
@@ -424,103 +380,6 @@ export function JavaAdvancedOptionsPanel({
               hint="Coloca imports de membros estáticos (ex.: import static Math.PI) em um bloco separado."
               checked={options.imports.separarImportsEstaticos}
               onCheckedChange={(v) => setImports("separarImportsEstaticos", v)}
-            />
-          </AccordionContent>
-        </AccordionItem>
-
-        {/* Qualidade */}
-        <AccordionItem
-          value="qualidade"
-          className="rounded-md border bg-background px-4 last:border-b"
-        >
-          <AccordionTrigger className="py-3 text-sm font-medium hover:no-underline">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-muted-foreground" />
-              Qualidade
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="space-y-3 pb-4">
-            <SwitchRow
-              id="qual-responsabilidade"
-              label="Métodos devem ter responsabilidade única"
-              hint="Cada método deve fazer só uma coisa. Se precisar explicar com 'e', provavelmente está fazendo de mais."
-              checked={options.qualidade.responsabilidadeUnica}
-              onCheckedChange={(v) => setQualidade("responsabilidadeUnica", v)}
-            />
-            <SwitchRow
-              id="qual-duplicacao"
-              label="Proibir duplicação de lógica"
-              hint="O mesmo trecho de código não deve aparecer em dois lugares. Repita zero, reutilize sempre."
-              checked={options.qualidade.proibirDuplicacao}
-              onCheckedChange={(v) => setQualidade("proibirDuplicacao", v)}
-            />
-            <SwitchRow
-              id="qual-excecoes"
-              label="Exigir tratamento de exceções"
-              hint="Erros não podem ser silenciados. Todo catch deve ter uma ação real, não apenas ignorar."
-              checked={options.qualidade.exigirTratamentoExcecoes}
-              onCheckedChange={(v) =>
-                setQualidade("exigirTratamentoExcecoes", v)
-              }
-            />
-            <SwitchRow
-              id="qual-optional"
-              label="Obrigar uso de Optional"
-              hint="Em vez de retornar null, use Optional para deixar explícito que o valor pode não existir."
-              checked={options.qualidade.obrigarOptional}
-              onCheckedChange={(v) => setQualidade("obrigarOptional", v)}
-            />
-            <SwitchRow
-              id="qual-null"
-              label="Evitar null returns"
-              hint="Métodos não devem retornar null. Use Optional, listas vazias ou objetos padrão no lugar."
-              checked={options.qualidade.evitarNullReturns}
-              onCheckedChange={(v) => setQualidade("evitarNullReturns", v)}
-            />
-          </AccordionContent>
-        </AccordionItem>
-
-        {/* Orientação a Objetos */}
-        <AccordionItem
-          value="oo"
-          className="rounded-md border bg-background px-4 last:border-b"
-        >
-          <AccordionTrigger className="py-3 text-sm font-medium hover:no-underline">
-            <div className="flex items-center gap-2">
-              <Boxes className="h-4 w-4 text-muted-foreground" />
-              Orientação a Objetos
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="space-y-3 pb-4">
-            <SwitchRow
-              id="oo-composicao"
-              label="Preferir composição ao invés de herança"
-              hint="Em vez de herdar de uma classe mãe, inclua outros objetos dentro da sua classe."
-              checked={options.orientacaoObjetos.preferirComposicao}
-              onCheckedChange={(v) => setOO("preferirComposicao", v)}
-            />
-            <SwitchRow
-              id="oo-final"
-              label="Classes finais por padrão"
-              hint="Classes são bloqueadas para herança por padrão. Assim você permite herança só quando realmente faz sentido."
-              checked={options.orientacaoObjetos.classesFinalsPorPadrao}
-              onCheckedChange={(v) => setOO("classesFinalsPorPadrao", v)}
-            />
-            <SwitchRow
-              id="oo-interfaces"
-              label="Interfaces obrigatórias para services"
-              hint="Todo service deve ter uma interface correspondente, facilitando trocar implementações e criar testes."
-              checked={options.orientacaoObjetos.interfacesObrigatoriasServices}
-              onCheckedChange={(v) =>
-                setOO("interfacesObrigatoriasServices", v)
-              }
-            />
-            <SwitchRow
-              id="oo-dto"
-              label="DTO obrigatório para APIs"
-              hint="A API não pode expor a entidade do banco diretamente; deve usar um objeto de transferência (DTO)."
-              checked={options.orientacaoObjetos.dtoObrigatorioApis}
-              onCheckedChange={(v) => setOO("dtoObrigatorioApis", v)}
             />
           </AccordionContent>
         </AccordionItem>
