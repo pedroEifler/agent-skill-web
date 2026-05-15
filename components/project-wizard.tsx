@@ -23,6 +23,16 @@ import {
   defaultSpringBootAdvancedOptions,
   type SpringBootAdvancedOptions,
 } from "@/components/spring-boot-advanced-options"
+import {
+  MicroservicesAdvancedOptionsPanel,
+  defaultMicroservicesAdvancedOptions,
+  type MicroservicesAdvancedOptions,
+} from "@/components/microservices-advanced-options"
+import {
+  HexagonalAdvancedOptionsPanel,
+  defaultHexagonalAdvancedOptions,
+  type HexagonalAdvancedOptions,
+} from "@/components/hexagonal-advanced-options"
 
 const TOTAL_STEPS = 4
 
@@ -61,6 +71,8 @@ export function ProjectWizard() {
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false)
   const [javaAdvancedOptions, setJavaAdvancedOptions] = useState<JavaAdvancedOptions>(defaultJavaAdvancedOptions)
   const [springBootAdvancedOptions, setSpringBootAdvancedOptions] = useState<SpringBootAdvancedOptions>(defaultSpringBootAdvancedOptions)
+  const [microservicesAdvancedOptions, setMicroservicesAdvancedOptions] = useState<MicroservicesAdvancedOptions>(defaultMicroservicesAdvancedOptions)
+  const [hexagonalAdvancedOptions, setHexagonalAdvancedOptions] = useState<HexagonalAdvancedOptions>(defaultHexagonalAdvancedOptions)
 
   // Carregar linguagens na montagem
   useEffect(() => {
@@ -243,7 +255,9 @@ export function ProjectWizard() {
           onClick={handleAdvancedOptions}
           disabled={
             !(currentStep === 0 && selectedLanguageId === "java") &&
-            !(currentStep === 1 && selectedFrameworkId === "spring-boot")
+            !(currentStep === 1 && selectedFrameworkId === "spring-boot") &&
+            !(currentStep === 2 && selectedArchitectureId === "microservices") &&
+            !(currentStep === 2 && selectedArchitectureId === "hexagonal")
           }
           className="gap-2"
         >
@@ -272,6 +286,20 @@ export function ProjectWizard() {
         <SpringBootAdvancedOptionsPanel
           options={springBootAdvancedOptions}
           onChange={setSpringBootAdvancedOptions}
+        />
+      )}
+
+      {showAdvancedOptions && currentStep === 2 && selectedArchitectureId === "microservices" && (
+        <MicroservicesAdvancedOptionsPanel
+          options={microservicesAdvancedOptions}
+          onChange={setMicroservicesAdvancedOptions}
+        />
+      )}
+
+      {showAdvancedOptions && currentStep === 2 && selectedArchitectureId === "hexagonal" && (
+        <HexagonalAdvancedOptionsPanel
+          options={hexagonalAdvancedOptions}
+          onChange={setHexagonalAdvancedOptions}
         />
       )}
     </div>
