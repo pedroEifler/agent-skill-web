@@ -6,13 +6,10 @@ import { OptionCard } from "@/components/option-card"
 import { StepHeader } from "@/components/step-header"
 import { Summary } from "@/components/summary"
 import { Settings, ChevronRight, ChevronLeft } from "lucide-react"
-import {
-  type Option,
-  getLanguages,
-  getFrameworks,
-  getArchitectures,
-  getDesignPatterns,
-} from "@/lib/mock-data"
+import { getLanguages, type Language } from "@/lib/language-service"
+import { getFrameworksByLanguage, type Framework } from "@/lib/framework-service"
+import { getArchitectures, type Architecture } from "@/lib/architecture-service"
+import { getDesignPatterns, type DesignPattern } from "@/lib/design-pattern-service"
 import {
   JavaAdvancedOptionsPanel,
   defaultJavaAdvancedOptions,
@@ -46,22 +43,24 @@ import {
 
 const TOTAL_STEPS = 4
 
+type Option = Language | Framework | Architecture | DesignPattern
+
 interface Selections {
-  language: Option | null
-  framework: Option | null
-  architecture: Option | null
-  designPatterns: Option[]
+  language: Language | null
+  framework: Framework | null
+  architecture: Architecture | null
+  designPatterns: DesignPattern[]
 }
 
 export function ProjectWizard() {
   const [currentStep, setCurrentStep] = useState(0)
   const [isComplete, setIsComplete] = useState(false)
 
-  // Dados carregados do mock
-  const [languages, setLanguages] = useState<Option[]>([])
-  const [frameworks, setFrameworks] = useState<Option[]>([])
-  const [architectures, setArchitectures] = useState<Option[]>([])
-  const [designPatterns, setDesignPatterns] = useState<Option[]>([])
+  // Dados carregados dos services
+  const [languages, setLanguages] = useState<Language[]>([])
+  const [frameworks, setFrameworks] = useState<Framework[]>([])
+  const [architectures, setArchitectures] = useState<Architecture[]>([])
+  const [designPatterns, setDesignPatterns] = useState<DesignPattern[]>([])
 
   // Seleções do usuário
   const [selections, setSelections] = useState<Selections>({
@@ -96,9 +95,11 @@ export function ProjectWizard() {
   // Carregar frameworks quando linguagem muda
   useEffect(() => {
     if (selectedLanguageId) {
-      getFrameworks(selectedLanguageId).then(setFrameworks)
+      const lang = languages.find((l) => l.id === selectedLanguageId)
+      const numericId = lang?.numericId ?? selectedLanguageId
+      getFrameworksByLanguage(numericId).then(setFrameworks)
     }
-  }, [selectedLanguageId])
+  }, [selectedLanguageId, languages])
 
   const handleLanguageSelect = (id: string) => {
     const selected = languages.find((l) => l.id === id) || null

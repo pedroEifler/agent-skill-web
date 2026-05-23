@@ -1,9 +1,11 @@
 "use client"
 
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Check, RotateCcw, FolderOpen, Download } from "lucide-react"
+import { Check, RotateCcw, FolderOpen, Download, Loader2 } from "lucide-react"
 import type { Option } from "@/lib/mock-data"
+import { generateSkill } from "@/lib/skills-service"
 
 interface Selections {
   language: Option | null
@@ -18,6 +20,8 @@ interface SummaryProps {
 }
 
 export function Summary({ selections, onRestart }: SummaryProps) {
+  const [isDownloading, setIsDownloading] = useState(false)
+
   const items = [
     { label: "Linguagem", value: selections.language },
     { label: "Framework", value: selections.framework },
@@ -44,9 +48,40 @@ export function Summary({ selections, onRestart }: SummaryProps) {
     }
   }
 
-  const handleDownload = () => {
-    console.log("Download solicitado")
-    console.log("Seleções para download:", selections)
+  const handleDownload = async () => {
+    if (
+      !selections.language ||
+      !selections.framework ||
+      !selections.architecture
+    ) {
+      return
+    }
+
+    setIsDownloading(true)
+    try {
+      const result = await generateSkill({
+        languageId: selections.language.numericId,
+        frameworkId: selections.framework.numericId,
+        architectureId: selections.architecture.numericId,
+        designPatternIds: selections.designPatterns.map((p) => p.numericId),
+      })
+
+      // Tenta fazer o download do conteúdo retornado pela API
+      const content =
+        typeof result === "string" ? result : JSON.stringify(result, null, 2)
+      const blob = new Blob([content], { type: "application/octet-stream" })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = `skill-${selections.language.id}-${selections.framework.id}.zip`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error("Erro ao gerar skill:", error)
+      alert("Erro ao gerar o projeto. Tente novamente.")
+    } finally {
+      setIsDownloading(false)
+    }
   }
 
   return (
@@ -111,9 +146,13 @@ export function Summary({ selections, onRestart }: SummaryProps) {
           <FolderOpen className="h-4 w-4" />
           Importar para Projeto
         </Button>
-        <Button onClick={handleDownload} variant="secondary" className="gap-2">
-          <Download className="h-4 w-4" />
-          Baixar
+        <Button onClick={handleDownload} variant="secondary" className="gap-2" disabled={isDownloading}>
+          {isDownloading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Download className="h-4 w-4" />
+          )}
+          {isDownloading ? "Gerando..." : "Baixar"}
         </Button>
         <Button onClick={onRestart} variant="outline" className="gap-2">
           <RotateCcw className="h-4 w-4" />
