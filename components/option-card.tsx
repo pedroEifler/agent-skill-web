@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils"
 import { Lock, Check } from "lucide-react"
-import type { Option } from "@/lib/mock-data"
+import type { Option } from "@/lib/types"
 
 interface OptionCardProps {
   option: Option

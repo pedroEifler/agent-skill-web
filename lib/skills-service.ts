@@ -1,20 +1,15 @@
 export interface GenerateSkillRequest {
-  languageId: number;
-  frameworkId: number;
-  architectureId: number;
-  designPatternIds: number[];
-}
-
-export interface GenerateSkillResponse {
-  // Adjust fields according to the actual API response
-  [key: string]: unknown;
+  languageId: string;
+  frameworkId: string;
+  architectureId: string;
+  designPatternIds: string[];
 }
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
 
 export async function generateSkill(
   payload: GenerateSkillRequest
-): Promise<GenerateSkillResponse> {
+): Promise<string> {
   const response = await fetch(`${API_BASE_URL}/api/skills/generate`, {
     method: "POST",
     headers: {
@@ -29,6 +24,17 @@ export async function generateSkill(
     );
   }
 
-  return response.json() as Promise<GenerateSkillResponse>;
+  const text = await response.text();
+
+  try {
+    const json = JSON.parse(text) as Record<string, unknown>;
+    if (typeof json.content === "string") {
+      return json.content;
+    }
+  } catch {
+    // não é JSON, retorna texto direto
+  }
+
+  return text;
 }
 
