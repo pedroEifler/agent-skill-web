@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Check, RotateCcw, Download, Loader2, Eye } from "lucide-react"
 import type { Option } from "@/lib/types"
-import { generateSkill } from "@/lib/skills-service"
+import JSZip from "jszip"
+import { generateSkill, type GenerateSkillResponse } from "@/lib/skills-service"
 
 interface Selections {
   language: Option | null
@@ -23,7 +24,7 @@ interface SummaryProps {
 
 export function Summary({ selections, onRestart }: SummaryProps) {
   const [isLoading, setIsLoading] = useState(false)
-  const [markdownContent, setMarkdownContent] = useState<string | null>(null)
+  const [skillResponse, setSkillResponse] = useState<GenerateSkillResponse | null>(null)
 
   const items = [
     { label: "Linguagem", value: selections.language },
@@ -42,13 +43,14 @@ export function Summary({ selections, onRestart }: SummaryProps) {
 
     setIsLoading(true)
     try {
-      const content = await generateSkill({
+      const result = await generateSkill({
         languageId: selections.language.id,
         frameworkId: selections.framework.id,
         architectureId: selections.architecture.id,
         designPatternIds: selections.designPatterns.map((p) => p.id),
+        type: "business"
       })
-      setMarkdownContent(content)
+      setSkillResponse(result)
     } catch (error) {
       console.error("Erro ao gerar skill:", error)
       alert("Erro ao gerar o skill. Tente novamente.")
@@ -57,31 +59,25 @@ export function Summary({ selections, onRestart }: SummaryProps) {
     }
   }
 
-  const handleDownload = () => {
-    if (!markdownContent || !selections.language || !selections.framework || !selections.architecture) return
+  const handleDownload = async () => {
+    if (!skillResponse || !selections.language || !selections.framework || !selections.architecture) return
 
-    const patterns = selections.designPatterns.map((p) => p.name).join(", ") || "Nenhum"
-    const date = new Date().toISOString().split("T")[0]
+    const zip = new JSZip()
+    const skillFolder = zip.folder(".skill")!
+    skillFolder.file("SKILL.md", skillResponse.content)
 
-    const frontmatter = [
-      "---",
-      `title: "${selections.language.name} + ${selections.framework.name} - Skills & Best Practices"`,
-      `language: "${selections.language.name}"`,
-      `framework: "${selections.framework.name}"`,
-      `architecture: "${selections.architecture.name}"`,
-      `patterns: "${patterns}"`,
-      `generated: "${date}"`,
-      "---",
-      "",
-    ].join("\n")
+    if (skillResponse.references.length > 0) {
+      const refsFolder = skillFolder.folder("references")!
+      for (const ref of skillResponse.references) {
+        refsFolder.file(ref.fileName, ref.content)
+      }
+    }
 
-    const fullContent = frontmatter + markdownContent
-
-    const blob = new Blob([fullContent], { type: "text/markdown;charset=utf-8" })
+    const blob = await zip.generateAsync({ type: "blob" })
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
     a.href = url
-    a.download = `skill-${selections.language.id}-${selections.framework.id}.md`
+    a.download = `skill-${selections.language.id}-${selections.framework.id}.zip`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -158,7 +154,7 @@ export function Summary({ selections, onRestart }: SummaryProps) {
           onClick={handleDownload}
           variant="secondary"
           className="gap-2"
-          disabled={!markdownContent}
+          disabled={!skillResponse}
         >
           <Download className="h-4 w-4" />
           Baixar .md
@@ -169,7 +165,7 @@ export function Summary({ selections, onRestart }: SummaryProps) {
         </Button>
       </div>
 
-      {markdownContent && (
+      {skillResponse && (
         <Card className="mt-6">
           <CardHeader>
             <CardTitle>Preview do Skill</CardTitle>
@@ -202,7 +198,7 @@ export function Summary({ selections, onRestart }: SummaryProps) {
                   td: ({ children }) => <td className="border border-border px-3 py-1">{children}</td>,
                 }}
               >
-                {markdownContent}
+                {skillResponse.content}
               </ReactMarkdown>
             </div>
           </CardContent>
