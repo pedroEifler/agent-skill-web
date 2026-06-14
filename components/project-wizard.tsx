@@ -5,41 +5,12 @@ import { Button } from "@/components/ui/button"
 import { OptionCard } from "@/components/option-card"
 import { StepHeader } from "@/components/step-header"
 import { Summary } from "@/components/summary"
-import { Settings, ChevronRight, ChevronLeft } from "lucide-react"
+import { ChevronRight, ChevronLeft } from "lucide-react"
 import { getLanguages, type Language } from "@/lib/language-service"
 import { getFrameworksByLanguage, type Framework } from "@/lib/framework-service"
 import { getArchitectures, type Architecture } from "@/lib/architecture-service"
 import { getDesignPatterns, type DesignPattern } from "@/lib/design-pattern-service"
-import {
-  JavaAdvancedOptionsPanel,
-  defaultJavaAdvancedOptions,
-  type JavaAdvancedOptions,
-} from "@/components/java-advanced-options"
-import {
-  SpringBootAdvancedOptionsPanel,
-  defaultSpringBootAdvancedOptions,
-  type SpringBootAdvancedOptions,
-} from "@/components/spring-boot-advanced-options"
-import {
-  MicroservicesAdvancedOptionsPanel,
-  defaultMicroservicesAdvancedOptions,
-  type MicroservicesAdvancedOptions,
-} from "@/components/microservices-advanced-options"
-import {
-  HexagonalAdvancedOptionsPanel,
-  defaultHexagonalAdvancedOptions,
-  type HexagonalAdvancedOptions,
-} from "@/components/hexagonal-advanced-options"
-import {
-  CleanArchitectureAdvancedOptionsPanel,
-  defaultCleanArchitectureAdvancedOptions,
-  type CleanArchitectureAdvancedOptions,
-} from "@/components/clean-architecture-advanced-options"
-import {
-  MvcAdvancedOptionsPanel,
-  defaultMvcAdvancedOptions,
-  type MvcAdvancedOptions,
-} from "@/components/mvc-advanced-options"
+import type { SkillType } from "@/lib/skills-service"
 
 const TOTAL_STEPS = 4
 
@@ -76,14 +47,8 @@ export function ProjectWizard() {
   const [selectedArchitectureId, setSelectedArchitectureId] = useState<string | null>(null)
   const [selectedPatternIds, setSelectedPatternIds] = useState<string[]>([])
 
-  // Opções avançadas Java
-  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false)
-  const [javaAdvancedOptions, setJavaAdvancedOptions] = useState<JavaAdvancedOptions>(defaultJavaAdvancedOptions)
-  const [springBootAdvancedOptions, setSpringBootAdvancedOptions] = useState<SpringBootAdvancedOptions>(defaultSpringBootAdvancedOptions)
-  const [microservicesAdvancedOptions, setMicroservicesAdvancedOptions] = useState<MicroservicesAdvancedOptions>(defaultMicroservicesAdvancedOptions)
-  const [hexagonalAdvancedOptions, setHexagonalAdvancedOptions] = useState<HexagonalAdvancedOptions>(defaultHexagonalAdvancedOptions)
-  const [cleanArchAdvancedOptions, setCleanArchAdvancedOptions] = useState<CleanArchitectureAdvancedOptions>(defaultCleanArchitectureAdvancedOptions)
-  const [mvcAdvancedOptions, setMvcAdvancedOptions] = useState<MvcAdvancedOptions>(defaultMvcAdvancedOptions)
+  // Tipo de skill: estudante ou profissional
+  const [skillType, setSkillType] = useState<SkillType>("student")
 
   // Carregar linguagens na montagem
   useEffect(() => {
@@ -175,6 +140,7 @@ export function ProjectWizard() {
     setSelectedFrameworkId(null)
     setSelectedArchitectureId(null)
     setSelectedPatternIds([])
+    setSkillType("student")
     setSelections({
       language: null,
       framework: null,
@@ -183,12 +149,15 @@ export function ProjectWizard() {
     })
   }
 
-  const handleAdvancedOptions = () => {
-    setShowAdvancedOptions((prev) => !prev)
-  }
-
   if (isComplete) {
-    return <Summary selections={selections} onRestart={handleRestart} />
+    return (
+      <Summary
+        selections={selections}
+        skillType={skillType}
+        onSkillTypeChange={setSkillType}
+        onRestart={handleRestart}
+      />
+    )
   }
 
   const stepConfig = [
@@ -264,23 +233,6 @@ export function ProjectWizard() {
         </Button>
 
         <Button
-          variant="ghost"
-          onClick={handleAdvancedOptions}
-          disabled={
-            !(currentStep === 0 && selectedLanguageId === "java") &&
-            !(currentStep === 1 && selectedFrameworkId === "spring-boot") &&
-            !(currentStep === 2 && selectedArchitectureId === "microservices") &&
-            !(currentStep === 2 && selectedArchitectureId === "hexagonal") &&
-            !(currentStep === 2 && selectedArchitectureId === "clean-architecture") &&
-            !(currentStep === 2 && selectedArchitectureId === "mvc")
-          }
-          className="gap-2"
-        >
-          <Settings className="h-4 w-4" />
-          {showAdvancedOptions ? "Ocultar Avançadas" : "Opções Avançadas"}
-        </Button>
-
-        <Button
           onClick={handleNext}
           disabled={!canProceed()}
           className="gap-2"
@@ -289,48 +241,6 @@ export function ProjectWizard() {
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
-
-      {showAdvancedOptions && currentStep === 0 && selectedLanguageId === "java" && (
-        <JavaAdvancedOptionsPanel
-          options={javaAdvancedOptions}
-          onChange={setJavaAdvancedOptions}
-        />
-      )}
-
-      {showAdvancedOptions && currentStep === 1 && selectedFrameworkId === "spring-boot" && (
-        <SpringBootAdvancedOptionsPanel
-          options={springBootAdvancedOptions}
-          onChange={setSpringBootAdvancedOptions}
-        />
-      )}
-
-      {showAdvancedOptions && currentStep === 2 && selectedArchitectureId === "microservices" && (
-        <MicroservicesAdvancedOptionsPanel
-          options={microservicesAdvancedOptions}
-          onChange={setMicroservicesAdvancedOptions}
-        />
-      )}
-
-      {showAdvancedOptions && currentStep === 2 && selectedArchitectureId === "hexagonal" && (
-        <HexagonalAdvancedOptionsPanel
-          options={hexagonalAdvancedOptions}
-          onChange={setHexagonalAdvancedOptions}
-        />
-      )}
-      
-      {showAdvancedOptions && currentStep === 2 && selectedArchitectureId === "clean-architecture" && (
-        <CleanArchitectureAdvancedOptionsPanel
-          options={cleanArchAdvancedOptions}
-          onChange={setCleanArchAdvancedOptions}
-        />
-      )}
-
-      {showAdvancedOptions && currentStep === 2 && selectedArchitectureId === "mvc" && (
-        <MvcAdvancedOptionsPanel
-          options={mvcAdvancedOptions}
-          onChange={setMvcAdvancedOptions}
-        />
-      )}
     </div>
   )
 }

@@ -5,10 +5,10 @@ import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Check, RotateCcw, Download, Loader2, Eye } from "lucide-react"
+import { Check, RotateCcw, Download, Loader2, Eye, GraduationCap, Briefcase } from "lucide-react"
 import type { Option } from "@/lib/types"
 import JSZip from "jszip"
-import { generateSkill, type GenerateSkillResponse } from "@/lib/skills-service"
+import { generateSkill, type GenerateSkillResponse, type SkillType } from "@/lib/skills-service"
 
 interface Selections {
   language: Option | null
@@ -19,12 +19,17 @@ interface Selections {
 
 interface SummaryProps {
   selections: Selections
+  skillType: SkillType
+  onSkillTypeChange: (type: SkillType) => void
   onRestart: () => void
 }
 
-export function Summary({ selections, onRestart }: SummaryProps) {
+export function Summary({ selections, skillType, onSkillTypeChange, onRestart }: SummaryProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [skillResponse, setSkillResponse] = useState<GenerateSkillResponse | null>(null)
+
+  const stripFrontmatter = (content: string) =>
+    content.replace(/^[ \t]*---[ \t]*\r?\n[\s\S]*?\r?\n[ \t]*---[ \t]*\r?\n?/gm, "").trimStart()
 
   const items = [
     { label: "Linguagem", value: selections.language },
@@ -48,7 +53,7 @@ export function Summary({ selections, onRestart }: SummaryProps) {
         frameworkId: selections.framework.id,
         architectureId: selections.architecture.id,
         designPatternIds: selections.designPatterns.map((p) => p.id),
-        type: "business"
+        type: skillType
       })
       setSkillResponse(result)
     } catch (error) {
@@ -69,7 +74,8 @@ export function Summary({ selections, onRestart }: SummaryProps) {
     if (skillResponse.references.length > 0) {
       const refsFolder = skillFolder.folder("references")!
       for (const ref of skillResponse.references) {
-        refsFolder.file(ref.fileName, ref.content)
+        const refFolder = refsFolder.folder(ref.folder)!
+        refFolder.file(ref.fileName, ref.content)
       }
     }
 
@@ -141,6 +147,51 @@ export function Summary({ selections, onRestart }: SummaryProps) {
         </CardContent>
       </Card>
 
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Tipo de Skill</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <button
+              type="button"
+              onClick={() => onSkillTypeChange("student")}
+              className={`flex items-center gap-3 rounded-lg border p-4 text-left transition-colors ${
+                skillType === "student"
+                  ? "border-primary bg-primary/5"
+                  : "border-border hover:border-primary/50"
+              }`}
+            >
+              <GraduationCap className="h-6 w-6 text-primary" />
+              <div>
+                <p className="font-semibold text-foreground">Estudante</p>
+                <p className="text-sm text-muted-foreground">
+                  Explicações didáticas e detalhadas
+                </p>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onSkillTypeChange("business")}
+              className={`flex items-center gap-3 rounded-lg border p-4 text-left transition-colors ${
+                skillType === "business"
+                  ? "border-primary bg-primary/5"
+                  : "border-border hover:border-primary/50"
+              }`}
+            >
+              <Briefcase className="h-6 w-6 text-primary" />
+              <div>
+                <p className="font-semibold text-foreground">Profissional</p>
+                <p className="text-sm text-muted-foreground">
+                  Foco em boas práticas de produção
+                </p>
+              </div>
+            </button>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
         <Button onClick={handleGenerate} className="gap-2" disabled={isLoading}>
           {isLoading ? (
@@ -198,7 +249,7 @@ export function Summary({ selections, onRestart }: SummaryProps) {
                   td: ({ children }) => <td className="border border-border px-3 py-1">{children}</td>,
                 }}
               >
-                {skillResponse.content}
+                {stripFrontmatter(skillResponse.content)}
               </ReactMarkdown>
             </div>
           </CardContent>

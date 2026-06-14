@@ -1,12 +1,15 @@
+export type SkillType = "business" | "student";
+
 export interface GenerateSkillRequest {
   languageId: string;
   frameworkId: string;
   architectureId: string;
   designPatternIds: string[];
-  type: "business" | "student";
+  type: SkillType;
 }
 
 export interface SkillReference {
+  folder: string;
   fileName: string;
   content: string;
 }
