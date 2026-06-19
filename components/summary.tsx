@@ -5,7 +5,7 @@ import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Check, RotateCcw, Download, Loader2, Eye, GraduationCap, Briefcase } from "lucide-react"
+import { Check, RotateCcw, Download, Loader2, Eye, GraduationCap, Briefcase, Maximize2, Minimize2 } from "lucide-react"
 import type { Option } from "@/lib/types"
 import JSZip from "jszip"
 import { generateSkill, type GenerateSkillResponse, type SkillType } from "@/lib/skills-service"
@@ -27,6 +27,7 @@ interface SummaryProps {
 export function Summary({ selections, skillType, onSkillTypeChange, onRestart }: SummaryProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [skillResponse, setSkillResponse] = useState<GenerateSkillResponse | null>(null)
+  const [isPreviewExpanded, setIsPreviewExpanded] = useState(false)
 
   const stripFrontmatter = (content: string) =>
     content.replace(/^[ \t]*---[ \t]*\r?\n[\s\S]*?\r?\n[ \t]*---[ \t]*\r?\n?/gm, "").trimStart()
@@ -83,7 +84,7 @@ export function Summary({ selections, skillType, onSkillTypeChange, onRestart }:
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
     a.href = url
-    a.download = `skill-${selections.language.id}-${selections.framework.id}.zip`
+    a.download = `Skills.zip`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -217,12 +218,31 @@ export function Summary({ selections, skillType, onSkillTypeChange, onRestart }:
       </div>
 
       {skillResponse && (
-        <Card className="mt-6">
-          <CardHeader>
+        <Card
+          className={`mt-6 transition-all duration-300 ${
+            isPreviewExpanded
+              ? "relative left-1/2 ml-[-45vw] w-[90vw] max-w-[90vw]"
+              : ""
+          }`}
+        >
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
             <CardTitle>Preview do Skill</CardTitle>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-2"
+              onClick={() => setIsPreviewExpanded((prev) => !prev)}
+            >
+              {isPreviewExpanded ? (
+                <Minimize2 className="h-4 w-4" />
+              ) : (
+                <Maximize2 className="h-4 w-4" />
+              )}
+              {isPreviewExpanded ? "Recolher" : "Expandir"}
+            </Button>
           </CardHeader>
           <CardContent>
-            <div className="max-h-[600px] overflow-y-auto text-sm text-foreground">
+            <div className="overflow-y-auto text-sm text-foreground max-h-[600px]">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{

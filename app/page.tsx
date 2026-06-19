@@ -10,7 +10,7 @@ export default function Home() {
 
   return (
     <main className="relative min-h-screen bg-background px-4 py-12">
-      <div className="absolute right-4 top-4">
+      <div className="fixed right-4 top-4 z-50">
         <ThemeToggle />
       </div>
       <div className="mx-auto max-w-4xl">
