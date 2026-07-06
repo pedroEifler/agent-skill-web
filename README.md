@@ -46,37 +46,24 @@ Ao final, o usuário escolhe entre o perfil **Estudante** (explicações didáti
 ### Tela de Onboarding
 > Apresentação do produto com as instruções de uso e chamada para ação.
 
-![Onboarding](docs/images/onboarding.png)
-
-### Como Funciona
-> Seção explicativa com os 3 passos: Configurar, Gerar e Integrar.
-
-![Como Funciona](docs/images/how-it-works.png)
+<img width="1920" height="1032" alt="Tela inicial 1" src="https://github.com/user-attachments/assets/acee84b6-d480-4614-bc07-03999f5eab33" />
 
 ### Wizard — Seleção de Linguagem
 > Primeiro passo do wizard: escolha da linguagem de programação.
 
-![Seleção de Linguagem](docs/images/step-language.png)
+<img width="1920" height="1032" alt="Linguagens" src="https://github.com/user-attachments/assets/09581c7c-2a78-4e7c-9cce-58bbcaa023ec" />
+
 
 ### Wizard — Seleção de Framework
 > Segundo passo: frameworks filtrados dinamicamente pela linguagem escolhida.
 
-![Seleção de Framework](docs/images/step-framework.png)
-
-### Wizard — Seleção de Arquitetura
-> Terceiro passo: definição da arquitetura do projeto.
-
-![Seleção de Arquitetura](docs/images/step-architecture.png)
-
-### Wizard — Design Patterns
-> Quarto passo: seleção múltipla de padrões de projeto.
-
-![Design Patterns](docs/images/step-patterns.png)
+<img width="1902" height="904" alt="Framework" src="https://github.com/user-attachments/assets/6f1648b0-b9e0-4691-945e-62ce3ae323c5" />
 
 ### Resumo e Geração da Skill
 > Tela final com resumo das seleções, escolha do perfil e preview do Markdown gerado.
 
-![Resumo](docs/images/summary.png)
+<img width="1920" height="1032" alt="Resumo" src="https://github.com/user-attachments/assets/b62d2d1c-c50f-4b09-a73a-e5e56cba3a9f" />
+<img width="1920" height="1032" alt="Preview" src="https://github.com/user-attachments/assets/09f88504-8bdc-4f8f-aa95-627b7b982c80" />
 
 ---
 
